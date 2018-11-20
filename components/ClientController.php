@@ -13,7 +13,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 
-class ConsumerController extends Controller
+class ClientController extends Controller
 {
     public function behaviors()
     {
@@ -34,7 +34,7 @@ class ConsumerController extends Controller
                         ],
                         'allow' => true,
                         'roles' => [
-                            Yii::$app->params['consumer_role']
+                            1
                         ],
                     ],
                 ]
@@ -47,5 +47,13 @@ class ConsumerController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionError()
+    {
+        $exception = Yii::$app->errorHandler->exception;
+        if ($exception !== null) {
+            return $this->render('error', ['exception' => $exception]);
+        }
     }
 }

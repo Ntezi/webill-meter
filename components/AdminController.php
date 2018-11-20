@@ -32,10 +32,10 @@ class AdminController extends Controller
                     [
                         'actions' => [
                             'index', 'create', 'update', 'view', 'delete', 'remove',
-                            ],
+                        ],
                         'allow' => true,
                         'roles' => [
-                            Yii::$app->params['admin_role']
+                            1
                         ],
                     ],
                 ]

@@ -114,7 +114,9 @@ class Bill extends BaseBill
         $current_reading = $this->getMeterCurrentReading();
         if ($current_reading != null) {
             $this->current_reading = $current_reading;
-            $this->save();
+            if ($this->save()) {
+                $this->readBillQRCode();
+            }
         }
     }
 
@@ -128,6 +130,88 @@ class Bill extends BaseBill
                 return false;
             }
         }
+    }
+
+    public function checkQRCode()
+    {
+        $current_address = User::getConsumerCurrentAddress(Yii::$app->user->identity->getId());
+        Yii::warning('current_address : ' . $current_address);
+        Yii::warning('readBillQRCode : ' . $this->readBillQRCode());
+
+        if ($current_address !== null && $current_address === $this->readBillQRCode()) {
+            return '<i class="fa fa-thumbs-up"></i>';
+        } else {
+            return '<i class="fa fa-thumbs-down"></i>';
+        }
+    }
+
+
+    public function checkLocation()
+    {
+        $meter = User::getConsumerCurrentMeter(Yii::$app->user->identity->getId());
+        if (!empty($meter)){
+            $current_latitude = $meter->latitude;
+            $current_longitude = $meter->longitude;
+
+            $uploaded_latitude = 34.70360765;
+            $uploaded_longitude = 135.19624529;
+
+
+            if ($current_latitude !== null && $current_longitude !== null) {
+
+                $distance = $this->vincentyGreatCircleDistance(
+                    $current_latitude, $current_longitude,
+                    $uploaded_latitude, $uploaded_longitude);
+
+                Yii::warning('$current_latitude : ' . $current_latitude);
+                Yii::warning('$current_longitude : ' . $current_longitude);
+
+                Yii::warning('$uploaded_latitude : ' . $uploaded_latitude);
+                Yii::warning('$uploaded_longitude : ' . $uploaded_longitude);
+
+                Yii::warning('$dinstance : ' . $distance);
+
+                if ($distance <= 300) {
+                    return '<i class="fa fa-thumbs-up"></i>';
+                } else {
+                    return '<i class="fa fa-thumbs-down"></i>';
+                }
+            }
+        }
+    }
+
+    /**
+     * Calculates the great-circle distance between two points, with
+     * the Vincenty formula.
+     * @param float $latitudeFrom Latitude of start point in [deg decimal]
+     * @param float $longitudeFrom Longitude of start point in [deg decimal]
+     * @param float $latitudeTo Latitude of target point in [deg decimal]
+     * @param float $longitudeTo Longitude of target point in [deg decimal]
+     * @param float $earthRadius Mean earth radius in [m]
+     * @return float Distance between points in [m] (same as earthRadius)
+     */
+    public static function vincentyGreatCircleDistance(
+        $latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000)
+    {
+        // convert from degrees to radians
+        $latFrom = deg2rad($latitudeFrom);
+        $lonFrom = deg2rad($longitudeFrom);
+        $latTo = deg2rad($latitudeTo);
+        $lonTo = deg2rad($longitudeTo);
+
+        $lonDelta = $lonTo - $lonFrom;
+        $a = pow(cos($latTo) * sin($lonDelta), 2) +
+            pow(cos($latFrom) * sin($latTo) - sin($latFrom) * cos($latTo) * cos($lonDelta), 2);
+        $b = sin($latFrom) * sin($latTo) + cos($latFrom) * cos($latTo) * cos($lonDelta);
+
+        $angle = atan2(sqrt($a), $b);
+        return $angle * $earthRadius;
+    }
+
+
+    public function checkBill()
+    {
+        return array('qr_code_check' => $this->checkQRCode(), 'location_check' => $this->checkLocation(),);
     }
 
     //Billing Formula
@@ -144,8 +228,10 @@ class Bill extends BaseBill
     public function getConsumerEmail()
     {
         $user = User::findOne(['id' => $this->user_id]);
-        if (empty($user))
+        if (empty($user)) {
             Yii::warning('email : ' . $user->email);
             return $user->email;
+        }
+
     }
 }

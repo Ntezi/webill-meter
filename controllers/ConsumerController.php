@@ -120,7 +120,7 @@ class ConsumerController extends AdminController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $address = $model->getConsumerCurrentAddress($model->id);
+        $current_address = $model->getConsumerCurrentAddress($model->id);
 
         $address_model = new Address();
         $addresses = Address::find()->all();
@@ -170,7 +170,7 @@ class ConsumerController extends AdminController
             'model' => $model,
             'addresses' => $addresses,
             'address_model' => $address_model,
-            'address' => $address,
+            'current_address' => $current_address,
         ]);
     }
 

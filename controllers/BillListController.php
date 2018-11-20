@@ -4,10 +4,10 @@ namespace app\controllers;
 
 use app\models\Bill;
 use Yii;
-use app\components\ConsumerController;
+use app\components\ClientController;
 use yii\data\ActiveDataProvider;
 
-class BillListController extends ConsumerController
+class BillListController extends ClientController
 {
     public function actionIndex()
     {

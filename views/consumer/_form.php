@@ -29,20 +29,15 @@ use kartik\typeahead\Typeahead;
     <div class="row">
 
         <div class="col-md-12 col-lg-12">
-            <?php if (!$model->isNewRecord && !empty($address)) : ?>
+            <?php if (!$model->isNewRecord && $current_address != null) : ?>
 
                 <div class="alert alert-info">
                     <strong>Meter Address:</strong>
-                    <?php echo $address->building_name . " - " .
-                        $address->street_number . " - " .
-                        $address->district . " - " .
-                        $address->town . " - " .
-                        $address->ward . " - " .
-                        $address->city; ?>
+                    <?php echo $current_address ?>
                 </div>
 
             <?php endif; ?>
-            <?php if (empty($address)) : $addresses_ = array();
+            <?php if ($current_address == null) : $addresses_ = array();
                 foreach ($addresses as $address):
                     $address_ = $address->building_name . " # " .
                         $address->street_number . " # " .

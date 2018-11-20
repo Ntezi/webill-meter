@@ -7,18 +7,25 @@
  */
 
 namespace app\helpers;
-ini_set('memory_limit','2G');
-ini_set('max_execution_time','180');
+ini_set('memory_limit', '2G');
+ini_set('max_execution_time', '180');
+
 use Yii;
 use Zxing\QrReader;
+use yii\base\ErrorException;
 
 class QRCodeHelper
 {
     public static function ReadQRCode($path)
     {
-        $qrcode = new QrReader($path);
-        $text = $qrcode->text(); //return decoded text from QR Code
-        Yii::warning('text: ' . $text);
-        return $text;
+        try {
+            $qrcode = new QrReader($path);
+            $text = $qrcode->text(); //return decoded text from QR Code
+            Yii::warning('text: ' . $text);
+            return $text;
+        } catch (ErrorException $e) {
+            Yii::$app->session->setFlash("danger", Yii::t('app', $e));
+        }
+
     }
 }

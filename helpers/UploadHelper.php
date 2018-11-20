@@ -12,6 +12,7 @@ use Imagine\Gd\Imagine;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Yii;
 use yii\helpers\FileHelper;
+use yii\base\ErrorException;
 
 class UploadHelper
 {
@@ -43,18 +44,24 @@ class UploadHelper
         $image = $imagine->open($image_path);
         $metadata = $image->metadata();
 
-        Yii::warning('metadata: ' . print_r($metadata, true));
-        if (!empty($metadata['exif.SubjectLocation']) && !empty($metadata)){
-            //get location of image
-            $imgLocation = self::get_image_location($image_path);
+        try {
+            Yii::warning('metadata: ' . print_r($metadata, true));
+            if (!empty($metadata['exif.SubjectLocation']) && !empty($metadata)){
+                //get location of image
+                $imgLocation = self::get_image_location($image_path);
 
-            //latitude & longitude
-            $imgLat = $imgLocation['latitude'];
-            $imgLng = $imgLocation['longitude'];
+                //latitude & longitude
+                $imgLat = $imgLocation['latitude'];
+                $imgLng = $imgLocation['longitude'];
 
-            Yii::warning('metadata: ' . print_r($imgLocation, true));
-            return $imgLocation;
+                Yii::warning('metadata: ' . print_r($imgLocation, true));
+                return $imgLocation;
+            }
+        } catch (ErrorException $e) {
+            Yii::$app->session->setFlash("danger", Yii::t('app', $e));
         }
+
+
     }
 
     /**
@@ -63,15 +70,20 @@ class UploadHelper
      */
     public static function getReadImage($image_path)
     {
-        //$path = getenv('PATH');
-        //putenv("PATH=$path:C:\Program Files (x86)\Tesseract-OCR");
-        $ocr = new TesseractOCR();
-        $ocr->image($image_path);
-        $ocr->executable("/usr/local/bin/tesseract");
-        $text = $ocr->run();
-        //$text = getenv('PATH');;
-        Yii::warning('ocr text: ' . $text);
-        return $text;
+        try {
+            //$path = getenv('PATH');
+            //putenv("PATH=$path:C:\Program Files (x86)\Tesseract-OCR");
+            $ocr = new TesseractOCR();
+            $ocr->image($image_path);
+            $ocr->executable("/usr/local/bin/tesseract");
+            $text = $ocr->run();
+            //$text = getenv('PATH');;
+            Yii::warning('ocr text: ' . $text);
+            return $text;
+        } catch (ErrorException $e) {
+            Yii::$app->session->setFlash("danger", Yii::t('app', $e));
+        }
+
     }
 
     /**

@@ -3,8 +3,8 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model frontend\models\Bill */
-$this->title = Yii::t('app', 'Update Bill No. ' . $model->id, [
+/* @var $model app\models\Bill */
+$this->title = Yii::t('app', 'Update Meter Info ID: ' . $model->id, [
     'nameAttribute' => '' . $model->id,
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bills'), 'url' => ['index']];
@@ -17,6 +17,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'check_bill' => $check_bill,
     ]) ?>
 
 </div>

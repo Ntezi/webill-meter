@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\User */
+/* @var $model app\models\User */
 
 $this->title = Yii::t('app', 'Update Consumer: ' . $model->username, [
     'nameAttribute' => '' . $model->id,
@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
         'model' => $model,
         'addresses' => $addresses,
         'address_model' => $address_model,
-        'address' => $address,
+        'current_address' => $current_address,
     ]) ?>
     <?php if (!empty($address)) : ?>
     <?php echo Html::a(Yii::t('app', 'Remove Meter'), ['remove', 'id' => $model->id], [

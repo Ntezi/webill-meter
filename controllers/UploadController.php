@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use app\components\AccessRule;
-use app\components\ConsumerController;
+use app\components\ClientController;
 use app\models\User;
 use Yii;
 use app\models\Bill;
@@ -14,7 +14,7 @@ use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use yii\web\Controller;
 
-class UploadController extends ConsumerController
+class UploadController extends ClientController
 {
 
     /**
@@ -76,6 +76,7 @@ class UploadController extends ConsumerController
                             if ($model->uploadImage($uploaded_file)) {
 
                                 $model->saveMeterReading();
+                                $model->checkBill();
                                 Yii::$app->session->setFlash("success", Yii::t('app', 'Successfully uploaded'));
                                 $transaction->commit();
                                 return $this->redirect(['update', 'id' => $model->id]);
@@ -150,6 +151,7 @@ class UploadController extends ConsumerController
                             if ($model->uploadImage($uploaded_file)) {
                                 Yii::$app->session->setFlash("success", Yii::t('app', 'Successfully uploaded'));
                                 $model->saveMeterReading();
+                                $model->checkBill();
                             } else {
                                 $transaction->rollBack();
                                 Yii::$app->session->setFlash("warning", Yii::t('app', 'Problem occurred while uploading'));
@@ -179,6 +181,7 @@ class UploadController extends ConsumerController
 
         return $this->render('update', [
             'model' => $model,
+            'check_bill' => $model->checkBill(),
         ]);
     }
 

@@ -19,14 +19,14 @@ class User extends BaseUser implements IdentityInterface
     public function rules()
     {
         return [
-            ['email', 'required', 'message'=>Yii::t('app', "Email is required")],
+            ['email', 'required', 'message' => Yii::t('app', "Email is required")],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['role', 'default', 'value' => self::ROLE_USER],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
             [['status', 'created_at', 'updated_at', 'created_by', 'updated_by', 'role'], 'integer'],
             [['username', 'password_hash', 'password_reset_token', 'email', 'first_name', 'last_name'], 'string', 'max' => 255],
             ['password', 'string', 'min' => 6],
-            ['confirm_password', 'compare', 'compareAttribute'=>'password', 'skipOnEmpty' => false, 'message' => Yii::t('app', "Passwords don't match")],
+            ['confirm_password', 'compare', 'compareAttribute' => 'password', 'skipOnEmpty' => false, 'message' => Yii::t('app', "Passwords don't match")],
         ];
     }
 
@@ -72,34 +72,43 @@ class User extends BaseUser implements IdentityInterface
         $body = "Your account was successfully created <br/>";
         $body .= "Please use this password: <b>" . $password . " </b>";
 
-        if ($role == Yii::$app->params['consumer_role']){
-            $body .=" to login at <a href=". Yii::$app->params['client_url'] .">Webill</a> " . "<br/>";
+        if ($role == Yii::$app->params['consumer_role']) {
+            $body .= " to login at <a href=" . Yii::$app->params['client_url'] . ">Webill</a> " . "<br/>";
         }
 
-        if ($role == Yii::$app->params['admin_role']){
-            $body .=" to login at <a href=". Yii::$app->params['admin_url'] .">Webill Admin</a>  as an admin user. " . "<br/>";
+        if ($role == Yii::$app->params['admin_role']) {
+            $body .= " to login at <a href=" . Yii::$app->params['admin_url'] . ">Webill Admin</a>  as an admin user. " . "<br/>";
         }
 
-        $body .="You may change it later after successfully logged in";
+        $body .= "You may change it later after successfully logged in";
 
-        EmailHelper::sendEmail($email, $subject , $body);
+        EmailHelper::sendEmail($email, $subject, $body);
     }
 
-    public function getConsumerCurrentAddress($user_id)
+    public static function getConsumerCurrentAddress($user_id)
     {
         $meter = self::getConsumerCurrentMeter($user_id);
-        if (!empty($meter))
-            return Address::findOne(['id' => $meter->address_id]);
+        if (!empty($meter)) {
+            $address = Address::findOne(['id' => $meter->address_id]);
+            if (!empty($address)) {
+
+                return $address->building_name . " - " . $address->street_number . " - " . $address->district . " - " . $address->town . " - " . $address->ward . " - " . $address->city;
+            }
+        }
+
     }
+
 
     public static function getConsumerCurrentMeter($user_id)
     {
         $user_has_meter = UserHasMeter::findOne(['user_id' => $user_id, 'ended_at' => null]);
-        if (!empty($user_has_meter))
+        if (!empty($user_has_meter)) {
             $meter = Meter::findOne(['id' => $user_has_meter->meter_id]);
 
             if (!empty($meter))
                 return $meter;
+        }
+
     }
 
 }
