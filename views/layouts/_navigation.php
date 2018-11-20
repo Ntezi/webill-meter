@@ -54,6 +54,7 @@ use yii\helpers\Url;
                     <a href="<?php echo Yii::$app->request->baseUrl; ?>/"><i class="fa fa-dashboard fa-fw"></i>
                         <?php echo Yii::t('app', 'Dashboard') ?></a>
                 </li>
+                <!--Admin Menu-->
                 <?php if (Yii::$app->user->identity->role == Yii::$app->params['admin_role']): ?>
 
                     <li class="<?php echo preg_match('/consumer/', $this->context->route, $matched) ? 'active' : '' ?>">
@@ -71,10 +72,15 @@ use yii\helpers\Url;
                     </li>
                 <?php endif; ?>
 
+                <!--Consumer Menu-->
                 <?php if (Yii::$app->user->identity->role == Yii::$app->params['consumer_role']): ?>
                     <li class="<?php echo preg_match('/upload/', $this->context->route, $matched) ? 'active' : '' ?>">
                         <a href="<?php echo Yii::$app->request->baseUrl; ?>/upload"><i class="fa fa-upload fa-fw"></i>
                             <?php echo Yii::t('app', 'Upload') ?></a>
+                    </li>
+                    <li class="<?php echo preg_match('/bill-list/', $this->context->route, $matched) ? 'active' : '' ?>">
+                        <a href="<?php echo Yii::$app->request->baseUrl; ?>/bill-list"><i class="fa fa-list fa-fw"></i>
+                            <?php echo Yii::t('app', 'Bill List') ?></a>
                     </li>
                 <?php endif; ?>
 

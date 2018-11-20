@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\AccessRule;
+use app\components\ConsumerController;
 use app\models\User;
 use Yii;
 use app\models\Bill;
@@ -13,41 +14,9 @@ use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 use yii\web\Controller;
 
-class UploadController extends Controller
+class UploadController extends ConsumerController
 {
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                // We will override the default rule config with the new AccessRule class
-                'ruleConfig' => [
-                    'class' => AccessRule::className(),
-                ],
-                'only' => [
-                    'index', 'create', 'update', 'view', 'delete', 'submit',
-                ],
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index', 'create', 'update', 'view', 'delete', 'submit',
-                        ],
-                        'allow' => true,
-                        'roles' => [
-                            Yii::$app->params['consumer_role']
-                        ],
-                    ],
-                ]
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                    'submit' => ['POST'],
-                ],
-            ],
-        ];
-    }
+
     /**
      * Lists all Bill models.
      * @return mixed
