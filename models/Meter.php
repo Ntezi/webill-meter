@@ -58,7 +58,10 @@ class Meter extends BaseMeter
     public static function getMeter($post)
     {
         $address = Address::getAddressByName($post);
-        return self::findOne(['address_id' => $address->id]);
+        if (!empty($address)) {
+            Yii::warning('$address_: ' . print_r($address, true));
+            return self::findOne(['address_id' => $address->id]);
+        }
     }
 
     public function beforeValidate()
@@ -70,7 +73,7 @@ class Meter extends BaseMeter
 
     public function uploadQRCode($uploaded_file)
     {
-        if ($uploaded_file){
+        if ($uploaded_file) {
             $file_name = rand() . rand() . date("Ymdhis") . '.' . $uploaded_file->extension;
             $path = Yii::getAlias('@app') . '/web/uploads/meters/';
             $file_dir = $path . $this->id . '/';

@@ -91,8 +91,7 @@ class User extends BaseUser implements IdentityInterface
         if (!empty($meter)) {
             $address = Address::findOne(['id' => $meter->address_id]);
             if (!empty($address)) {
-
-                return $address->building_name . " - " . $address->street_number . " - " . $address->district . " - " . $address->town . " - " . $address->ward . " - " . $address->city;
+                return $address->full_address;
             }
         }
 

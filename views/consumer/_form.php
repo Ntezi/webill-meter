@@ -8,6 +8,7 @@ use kartik\typeahead\Typeahead;
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $address app\models\Address */
 ?>
 
 <div class="user-form">
@@ -38,15 +39,14 @@ use kartik\typeahead\Typeahead;
 
             <?php endif; ?>
             <?php if ($current_address == null) : $addresses_ = array();
-                foreach ($addresses as $address):
-                    $address_ = $address->building_name . " # " .
-                        $address->street_number . " # " .
-                        $address->district . " # " .
-                        $address->town . " # " .
-                        $address->ward . " # " .
-                        $address->city;
-                    array_push($addresses_, $address_);
-                endforeach;
+
+                if (!empty($addresses)) {
+                    foreach ($addresses as $address):
+                        $address_ = $address->full_address;
+                        array_push($addresses_, $address_);
+                    endforeach;
+                }
+
                 echo $form->field($address_model, 'address')->widget(Typeahead::classname(), [
                     'options' => ['placeholder' => 'Search address'],
                     'pluginOptions' => ['highlight' => true,],

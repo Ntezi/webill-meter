@@ -22,7 +22,7 @@ class Address extends BaseAddress
             [['zip_code', 'prefecture', 'city', 'ward', 'town', 'district', 'street_number', 'building_name'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['created_by', 'updated_by', 'status'], 'integer'],
-            [['zip_code', 'prefecture', 'city', 'ward', 'town', 'district', 'street_number', 'building_name'], 'string', 'max' => 255],
+            [['zip_code', 'prefecture', 'city', 'ward', 'town', 'district', 'street_number', 'building_name', 'full_address'], 'string', 'max' => 255],
         ];
     }
 
@@ -41,6 +41,7 @@ class Address extends BaseAddress
     {
         $address = explode(' # ', $post['address']);
         Yii::warning($address);
+
         $building_name = $address['0'];
         $street_number = $address['1'];
         $district = $address['2'];
@@ -48,13 +49,18 @@ class Address extends BaseAddress
         $ward = $address['4'];
         $city = $address['5'];
 
-        return self::find()
-            ->where(['building_name' => $building_name])
-            ->andWhere(['street_number' => $street_number])
-            ->andWhere(['district' => $district])
-            ->andWhere(['town' => $town])
-            ->andWhere(['ward' => $ward])
-            ->andWhere(['city' => $city])
-            ->one();
+        if ($building_name != '' && $street_number != '' && $district != '' && $town != '' && $ward != '' && $city != '') {
+            $address_ = self::find()
+                ->where(['building_name' => $building_name])
+                ->andWhere(['street_number' => $street_number])
+                ->andWhere(['district' => $district])
+                ->andWhere(['town' => $town])
+                ->andWhere(['ward' => $ward])
+                ->andWhere(['city' => $city])
+                ->one();
+
+            return $address_;
+        }
+
     }
 }

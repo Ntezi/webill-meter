@@ -63,32 +63,27 @@ class ConsumerController extends AdminController
             $transaction = $model->getDb()->beginTransaction();
             try {
 
-                if ($model->save()){
+                if ($model->save()) {
                     $post = Yii::$app->request->post('Address');
 
                     if (!empty($post['address'])) {
                         $meter = Meter::getMeter($post);
-                        $user_has_meter = new UserHasMeter();
-                        $user_has_meter->user_id = $model->id;
-                        $user_has_meter->meter_id = $meter->id;
-                        $user_has_meter->started_at = date("Y-m-d H:i:s");
-                        $user_has_meter->save();
+                        if (!empty($meter)) {
+                            $user_has_meter = new UserHasMeter();
+                            if ($user_has_meter->checkTakenMeter($meter->id)) {
+                                $user_has_meter->user_id = $model->id;
+                                $user_has_meter->meter_id = $meter->id;
+                                $user_has_meter->started_at = date("Y-m-d H:i:s");
+                                $user_has_meter->save();
 
-                        $error = $user_has_meter->getErrors();
-                        if (!empty($error)) {
-                            Yii::error(print_r($error, true));
-
-                            if (!empty($error ['meter_id'][0]) && $error ['meter_id'][0] == 'This meter has already been taken') {
-
-
-                                Yii::warning($error ['meter_id'][0]);
-                                Yii::$app->session->addFlash("warning", Yii::t('app', 'This meter has already been taken'));
-                                Yii::warning(Yii::$app->session->getFlash("warning"));
+                                $error = $user_has_meter->getErrors();
+                                Yii::error(print_r($error, true));
+                            } else {
+                                Yii::$app->session->setFlash("danger", Yii::t('app', 'This meter has already been taken'));
                             }
-
+                        } else {
+                            Yii::$app->session->setFlash("danger", Yii::t('app', 'No meter assigned to the address!'));
                         }
-                    } else {
-
                     }
                     $transaction->commit();
                     return $this->redirect(['view', 'id' => $model->id]);
@@ -130,31 +125,32 @@ class ConsumerController extends AdminController
             $transaction = $model->getDb()->beginTransaction();
             try {
 
-                if ($model->save()){
+                if ($model->save()) {
                     $post = Yii::$app->request->post('Address');
-
                     if (!empty($post['address'])) {
                         $meter = Meter::getMeter($post);
-                        $user_has_meter = new UserHasMeter();
-                        $user_has_meter->user_id = $model->id;
-                        $user_has_meter->meter_id = $meter->id;
-                        $user_has_meter->started_at = date("Y-m-d H:i:s");
-                        $user_has_meter->save();
+                        Yii::warning("Get Meter: " . print_r($meter, true));
 
-                        $error = $user_has_meter->getErrors();
-                        if (!empty($error)) {
-                            Yii::error(print_r($error, true));
+                        if (!empty($meter)) {
+                            $user_has_meter = new UserHasMeter();
+                            if ($user_has_meter->checkTakenMeter($meter->id, $model->id)) {
+                                $user_has_meter->user_id = $model->id;
+                                $user_has_meter->meter_id = $meter->id;
+                                $user_has_meter->started_at = date("Y-m-d H:i:s");
+                                $user_has_meter->save();
 
-                            if (!empty($error ['meter_id'][0]) && $error ['meter_id'][0] == 'This meter has already been taken') {
-                                Yii::$app->session->setFlash("warning", Yii::t('app', 'This meter has already been taken'));
+                                $error = $user_has_meter->getErrors();
+                                Yii::error(print_r($error, true));
+                            } else {
+                                Yii::$app->session->setFlash("danger", Yii::t('app', 'This meter has already been taken'));
                             }
+                        } else {
+                            Yii::$app->session->setFlash("danger", Yii::t('app', 'No meter assigned to the address!'));
                         }
-                    } else {
-
                     }
 
                     $transaction->commit();
-                    Yii::$app->session->setFlash("success", Yii::t('app', 'Successfully updated '));
+                    //Yii::$app->session->setFlash("success", Yii::t('app', 'Successfully updated '));
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             } catch (\Exception $e) {

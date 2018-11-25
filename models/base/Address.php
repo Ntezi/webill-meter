@@ -21,6 +21,7 @@ use Yii;
  * @property int $created_by
  * @property int $updated_by
  * @property int $status
+ * @property string $full_address
  *
  * @property Meter[] $meters
  */
@@ -43,7 +44,7 @@ class Address extends \yii\db\ActiveRecord
             [['zip_code', 'prefecture', 'city', 'ward', 'town', 'district', 'street_number', 'building_name'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['created_by', 'updated_by', 'status'], 'integer'],
-            [['zip_code', 'prefecture', 'city', 'ward', 'town', 'district', 'street_number', 'building_name'], 'string', 'max' => 255],
+            [['zip_code', 'prefecture', 'city', 'ward', 'town', 'district', 'street_number', 'building_name', 'full_address'], 'string', 'max' => 255],
         ];
     }
 
@@ -67,6 +68,7 @@ class Address extends \yii\db\ActiveRecord
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
             'status' => Yii::t('app', 'Status'),
+            'full_address' => Yii::t('app', 'Full Address'),
         ];
     }
 
