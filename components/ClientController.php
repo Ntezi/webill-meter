@@ -21,9 +21,9 @@ class ClientController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 // We will override the default rule config with the new AccessRule class
-                'ruleConfig' => [
+                /*'ruleConfig' => [
                     'class' => AccessRule::className(),
-                ],
+                ],*/
                 'only' => [
                     'index', 'create', 'update', 'view', 'delete', 'submit',
                 ],
@@ -33,9 +33,14 @@ class ClientController extends Controller
                             'index', 'create', 'update', 'view', 'delete', 'submit',
                         ],
                         'allow' => true,
-                        'roles' => [
-                            1
-                        ],
+
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->identity->role === Yii::$app->params['consumer_role'];
+                        }
+
+                        /*'roles' => [
+                            Yii::$app->params['consumer_role']
+                        ],*/
                     ],
                 ]
             ],

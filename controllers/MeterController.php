@@ -99,6 +99,7 @@ class MeterController extends AdminController
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
+
             Yii::error(print_r($model->getErrors(), true));
         }
         return $this->render('update', [

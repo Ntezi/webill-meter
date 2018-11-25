@@ -16,7 +16,7 @@ use Yii;
  * @property string $updated_at
  * @property int $created_by
  * @property int $updated_by
- * @property string $flag
+ * @property int $flag 0:'pending',1:'read',2:'deleted',''
  * @property int $bill_id
  *
  * @property Bill $bill
@@ -38,12 +38,11 @@ class Notification extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'to_id', 'from_id', 'subject', 'message', 'bill_id'], 'required'],
-            [['id', 'to_id', 'from_id', 'created_by', 'updated_by', 'bill_id'], 'integer'],
-            [['message', 'flag'], 'string'],
+            [['to_id', 'from_id', 'subject', 'message', 'bill_id'], 'required'],
+            [['to_id', 'from_id', 'created_by', 'updated_by', 'flag', 'bill_id'], 'integer'],
+            [['message'], 'string'],
             [['created_at', 'updated_at'], 'safe'],
             [['subject'], 'string', 'max' => 125],
-            [['id'], 'unique'],
             [['bill_id'], 'exist', 'skipOnError' => true, 'targetClass' => Bill::className(), 'targetAttribute' => ['bill_id' => 'id']],
         ];
     }

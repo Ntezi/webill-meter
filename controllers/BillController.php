@@ -29,11 +29,6 @@ class BillController extends AdminController
             }
 
 
-
-            //Get image metadata
-            UploadHelper::getImageInfo($bill->getImagePath());
-
-
 //            $meter = User::getConsumerCurrentMeter($bill->user_id);
 //            if (!empty($meter)) {
 //

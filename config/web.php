@@ -1,5 +1,5 @@
 <?php
-
+use kartik\mpdf\Pdf;
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -63,6 +63,20 @@ $config = [
 //        'session' => [
 //            'class' => 'yii\web\DbSession',
 //        ],
+        // setup Krajee Pdf component
+        'pdf' => [
+            'class' => Pdf::classname(),
+            'format' => Pdf::FORMAT_A4,
+            'orientation' => Pdf::ORIENT_PORTRAIT,
+            'destination' => Pdf::DEST_BROWSER,
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
+            'cssInline' => '.kv-heading-1{font-size:18px}',
+            'options' => ['title' => 'WeBill Invoice'],
+            'methods' => [
+                'SetHeader'=>['WeBill Invoice'],
+                'SetFooter'=>['{PAGENO}'],
+            ]
+        ]
 
     ],
     'params' => $params,

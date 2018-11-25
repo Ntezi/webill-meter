@@ -52,12 +52,6 @@ use yii\widgets\ActiveForm;
                     </span>
                         <?= Yii::t('app', 'Location Check') ?>
                     </li>
-                    <li class="list-group-item">
-                    <span class="badge">
-                        <i class="fa fa-thumbs-down"></i>
-                    </span>
-                        Item 3
-                    </li>
                 </ul>
             </div>
         <?php endif; ?>

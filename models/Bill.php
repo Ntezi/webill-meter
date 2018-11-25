@@ -92,14 +92,14 @@ class Bill extends BaseBill
 
     public function getImageAbsolutePath()
     {
-        $image = $this->user_id . '/' . $this->id . '/' . $this->image_file;
+        $image = $this->user_id . '/' . $this->id . '/' . 'new_'. $this->image_file;
         return Yii::getAlias('@app') . '/web/uploads/bills/' . $image;
     }
 
     public function readBillQRCode()
     {
         Yii::warning('bills path: ' . $this->getImagePath());
-        return QRCodeHelper::ReadQRCode($this->getImagePath());
+        return QRCodeHelper::ReadQRCode($this->getImageAbsolutePath());
     }
 
     public function getMeterCurrentReading()
@@ -152,31 +152,35 @@ class Bill extends BaseBill
         if (!empty($meter)){
             $current_latitude = $meter->latitude;
             $current_longitude = $meter->longitude;
+            $image_location = UploadHelper::getImageLocationInfo($this->getImagePath());
 
-            $uploaded_latitude = 34.70360765;
-            $uploaded_longitude = 135.19624529;
+            if (!empty($image_location)) {
+                Yii::warning('image_location: ' . print_r($image_location, true));
 
+                $uploaded_latitude = $image_location['latitude'];
+                $uploaded_longitude = $image_location['longitude'];
 
-            if ($current_latitude !== null && $current_longitude !== null) {
+                if ($current_latitude !== null && $current_longitude !== null) {
+                    $distance = $this->vincentyGreatCircleDistance(
+                        $current_latitude, $current_longitude,
+                        $uploaded_latitude, $uploaded_longitude);
 
-                $distance = $this->vincentyGreatCircleDistance(
-                    $current_latitude, $current_longitude,
-                    $uploaded_latitude, $uploaded_longitude);
+                    Yii::warning('$current_latitude : ' . $current_latitude);
+                    Yii::warning('$current_longitude : ' . $current_longitude);
 
-                Yii::warning('$current_latitude : ' . $current_latitude);
-                Yii::warning('$current_longitude : ' . $current_longitude);
+                    Yii::warning('$uploaded_latitude : ' . $uploaded_latitude);
+                    Yii::warning('$uploaded_longitude : ' . $uploaded_longitude);
 
-                Yii::warning('$uploaded_latitude : ' . $uploaded_latitude);
-                Yii::warning('$uploaded_longitude : ' . $uploaded_longitude);
+                    Yii::warning('$dinstance : ' . $distance);
 
-                Yii::warning('$dinstance : ' . $distance);
-
-                if ($distance <= 300) {
-                    return '<i class="fa fa-thumbs-up"></i>';
-                } else {
-                    return '<i class="fa fa-thumbs-down"></i>';
+                    if ($distance <= 300) {
+                        return '<i class="fa fa-thumbs-up"></i>';
+                    } else {
+                        return '<i class="fa fa-thumbs-down"></i>';
+                    }
                 }
             }
+
         }
     }
 

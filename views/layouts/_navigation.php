@@ -82,6 +82,10 @@ use yii\helpers\Url;
                         <a href="<?php echo Yii::$app->request->baseUrl; ?>/bill-list"><i class="fa fa-list fa-fw"></i>
                             <?php echo Yii::t('app', 'Bill List') ?></a>
                     </li>
+                    <li class="<?php echo preg_match('/notification/', $this->context->route, $matched) ? 'active' : '' ?>">
+                        <a href="<?php echo Yii::$app->request->baseUrl; ?>/notification"><i class="fa fa-envelope-o fa-fw"></i>
+                            <?php echo Yii::t('app', 'Notifications') ?></a>
+                    </li>
                 <?php endif; ?>
 
             </ul>

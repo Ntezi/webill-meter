@@ -8,6 +8,7 @@
 
 namespace app\helpers;
 
+use claviska\SimpleImage;
 use Imagine\Gd\Imagine;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Yii;
@@ -20,12 +21,15 @@ class UploadHelper
     public static function upload($uploaded_file, $model, $file_attribute, $file_name, $file_dir)
     {
         try {
+
             $file_path = $file_dir . $file_name;
 
             FileHelper::createDirectory($file_dir);
-
             if ($uploaded_file) { //&& $model->validate()
                 if ($uploaded_file->saveAs($file_path)) {
+
+                    self::checkImage($file_dir, $file_name);
+
                     $model->$file_attribute = $file_name;
                     $model->save();
                     return true;
@@ -38,30 +42,30 @@ class UploadHelper
         }
     }
 
-    public static function getImageInfo($image_path)
+    public static function getImageLocationInfo($image_path)
     {
-        $imagine = new Imagine();
-        $image = $imagine->open($image_path);
-        $metadata = $image->metadata();
+        Yii::warning('image_path : ' . $image_path);
 
         try {
-            Yii::warning('metadata: ' . print_r($metadata, true));
-            if (!empty($metadata['exif.SubjectLocation']) && !empty($metadata)){
+            $image = new SimpleImage($image_path);
+            $exif = $image->getExif();
+
+            Yii::warning('exif: ' . print_r($exif, true));
+
+            if (!empty($exif)) {
                 //get location of image
-                $imgLocation = self::get_image_location($image_path);
+                $image_location = self::get_image_location($image_path);
 
                 //latitude & longitude
-                $imgLat = $imgLocation['latitude'];
-                $imgLng = $imgLocation['longitude'];
-
-                Yii::warning('metadata: ' . print_r($imgLocation, true));
-                return $imgLocation;
+                $imgLat = $image_location['latitude'];
+                $imgLng = $image_location['longitude'];
+                Yii::warning('image_location: ' . print_r($image_location, true));
+                return $image_location;
             }
-        } catch (ErrorException $e) {
-            Yii::$app->session->setFlash("danger", Yii::t('app', $e));
+
+        } catch (\Exception $err) {
+            Yii::$app->getSession()->setFlash("danger", 'getImageLocationInfo: ' . $err->getMessage());
         }
-
-
     }
 
     /**
@@ -135,5 +139,36 @@ class UploadHelper
         if (count($parts) == 1)
             return $parts[0];
         return floatval($parts[0]) / floatval($parts[1]);
+    }
+
+
+    public static function checkImage($file_dir, $file_name)
+    {
+        $image_file = $file_dir . $file_name;
+        try {
+            $image = new SimpleImage($image_file);
+
+            $width = $image->getWidth();
+            $height = $image->getHeight();
+
+            Yii::warning('width : ' . $width);
+            Yii::warning('height : ' . $height);
+
+            $min_width = 100;
+            $max_width = 512;
+
+            if ($width > $min_width) {
+                $image->fromFile($image_file)->resize($max_width)->toFile($file_dir . 'new_'. $file_name);
+                return true;
+            }
+
+            if ($width < $min_width) {
+                Yii::$app->getSession()->setFlash("fail", 'The dimensions of this image are too small!');
+                return false;
+            }
+
+        } catch (\Exception $err) {
+            Yii::$app->getSession()->setFlash("danger", 'checkImage: ' . $err->getMessage());
+        }
     }
 }

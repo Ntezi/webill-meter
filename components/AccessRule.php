@@ -13,29 +13,20 @@ use yii\filters\AccessRule as BaseAccessRule;
 
 class AccessRule extends BaseAccessRule
 {
+    public $role;
     /**
      * @inheritdoc
      */
     protected function matchRole($user)
     {
-        if (empty($this->roles)) {
+        $role = '@';
+
+        if ($role == '?') {
+            if ($user->getIsGuest()) {
+                return false;
+            }
+        }  elseif (!$user->getIsGuest() && $role == $user->identity->role) {
             return true;
         }
-        foreach ($this->roles as $role) {
-            if ($role == '?') {
-                if ($user->getIsGuest()) {
-                    return true;
-                }
-            } elseif ($role == User::ROLE_USER) {
-                if (!$user->getIsGuest()) {
-                    return true;
-                }
-                // Check if the user is logged in, and the roles match
-            } elseif (!$user->getIsGuest() && $role == $user->identity->role) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

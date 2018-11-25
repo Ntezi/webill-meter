@@ -22,9 +22,9 @@ class AdminController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 // We will override the default rule config with the new AccessRule class
-                'ruleConfig' => [
+                /*'ruleConfig' => [
                     'class' => AccessRule::className(),
-                ],
+                ],*/
                 'only' => [
                     'index', 'create', 'update', 'view', 'delete', 'remove',
                 ],
@@ -34,9 +34,13 @@ class AdminController extends Controller
                             'index', 'create', 'update', 'view', 'delete', 'remove',
                         ],
                         'allow' => true,
-                        'roles' => [
-                            1
-                        ],
+                        'matchCallback' => function ($rule, $action) {
+                            return Yii::$app->user->identity->role === Yii::$app->params['admin_role'];
+                        },
+
+                        /*'roles' => [
+                            Yii::$app->params['admin_role']
+                        ],*/
                     ],
                 ]
             ],

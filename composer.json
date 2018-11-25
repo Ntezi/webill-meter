@@ -20,8 +20,9 @@
         "yiisoft/yii2-swiftmailer": "~2.0.0",
         "kartik-v/yii2-widget-typeahead": "dev-master",
         "khanamiryan/qrcode-detector-decoder": "^1.0",
-        "yiisoft/yii2-imagine": "^2.1",
-        "thiagoalessio/tesseract_ocr": "^2.7"
+        "thiagoalessio/tesseract_ocr": "^2.7",
+        "claviska/simpleimage": "^3.3",
+        "kartik-v/yii2-mpdf": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
