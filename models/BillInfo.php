@@ -23,4 +23,15 @@ class BillInfo  extends BaseBillInfo
             ],
         ];
     }
+
+    public function rules()
+    {
+        return [
+            [['title'], 'required'],
+            [['unit_price', 'tax', 'discount', 'processing_fee'], 'number'],
+            [['submission_start', 'submission_end', 'created_at', 'updated_at'], 'safe'],
+            [['created_by', 'updated_by', 'status'], 'integer'],
+            [['title'], 'string', 'max' => 255],
+        ];
+    }
 }

@@ -8,7 +8,9 @@ use Yii;
  * This is the model class for table "bill_info".
  *
  * @property int $id
+ * @property string $title
  * @property double $unit_price per kilowatt
+ * @property double $tax
  * @property double $discount
  * @property double $processing_fee
  * @property string $submission_start
@@ -19,7 +21,7 @@ use Yii;
  * @property int $updated_by
  * @property int $status 0:inactive; 1:active
  *
- * @property Bill[] $bills
+ * @property Meter[] $meters
  */
 class BillInfo extends \yii\db\ActiveRecord
 {
@@ -37,9 +39,11 @@ class BillInfo extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['unit_price', 'discount', 'processing_fee'], 'number'],
+            [['title', 'tax'], 'required'],
+            [['unit_price', 'tax', 'discount', 'processing_fee'], 'number'],
             [['submission_start', 'submission_end', 'created_at', 'updated_at'], 'safe'],
             [['created_by', 'updated_by', 'status'], 'integer'],
+            [['title'], 'string', 'max' => 255],
         ];
     }
 
@@ -50,7 +54,9 @@ class BillInfo extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
+            'title' => Yii::t('app', 'Title'),
             'unit_price' => Yii::t('app', 'Unit Price'),
+            'tax' => Yii::t('app', 'Tax'),
             'discount' => Yii::t('app', 'Discount'),
             'processing_fee' => Yii::t('app', 'Processing Fee'),
             'submission_start' => Yii::t('app', 'Submission Start'),
@@ -66,8 +72,8 @@ class BillInfo extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getBills()
+    public function getMeters()
     {
-        return $this->hasMany(Bill::className(), ['bill_info_id' => 'id']);
+        return $this->hasMany(Meter::className(), ['bill_info_id' => 'id']);
     }
 }

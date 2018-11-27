@@ -37,16 +37,17 @@ class Meter extends BaseMeter
     public function rules()
     {
         return [
-            [['address_id', 'reading'], 'required'],
+            [['address_id', 'bill_info_id', 'latitude', 'longitude'], 'required'],
             [['address_id', 'created_by', 'updated_by', 'status'], 'integer'],
             [['latitude', 'longitude', 'reading'], 'number'],
             [['created_at', 'update_at'], 'safe'],
             [['serial_number', 'qr_code_file'], 'string', 'max' => 255],
             [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => Address::className(), 'targetAttribute' => ['address_id' => 'id']],
+            [['bill_info_id'], 'exist', 'skipOnError' => true, 'targetClass' => BillInfo::className(), 'targetAttribute' => ['bill_info_id' => 'id']],
 
 //            [['qr_code_image'], 'required', 'on' => 'create'],
-            [['qr_code_image'], 'safe'],
-            [['qr_code_image'], 'file', 'skipOnEmpty' => true, 'extensions' => ['png', 'jpg', 'jpeg', 'gif'], 'maxSize' => 1024 * 1024],
+//            [['qr_code_image'], 'safe'],
+//            [['qr_code_image'], 'file', 'skipOnEmpty' => true, 'extensions' => ['png', 'jpg', 'jpeg', 'gif'], 'maxSize' => 1024 * 1024],
         ];
     }
 
@@ -93,5 +94,11 @@ class Meter extends BaseMeter
         $path = Yii::getAlias('@app') . '/web/uploads/meters/' . $this->id . '/' . $this->qr_code_file;
         Yii::warning('meters path: ' . $path);
         return QRCodeHelper::ReadQRCode($path);
+    }
+
+    public function getImagePath()
+    {
+        $image = $this->id . '/' . $this->qr_code_file;
+        return Yii::$app->params['uploads'] . 'meters/' . $image;
     }
 }

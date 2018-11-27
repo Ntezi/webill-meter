@@ -70,6 +70,10 @@ use yii\helpers\Url;
                         <a href="<?php echo Yii::$app->request->baseUrl; ?>/meter/"><i class="fa fa-clock-o fa-fw"></i>
                             <?php echo Yii::t('app', 'Meters') ?></a>
                     </li>
+                    <li class="<?php echo preg_match('/bill-info/', $this->context->route, $matched) ? 'active' : '' ?>">
+                        <a href="<?php echo Yii::$app->request->baseUrl; ?>/bill-info/"><i class="fa fa-info fa-fw"></i>
+                            <?php echo Yii::t('app', 'Bill Information') ?></a>
+                    </li>
                 <?php endif; ?>
 
                 <!--Consumer Menu-->

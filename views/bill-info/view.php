@@ -4,13 +4,13 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Meter */
+/* @var $model app\models\BillInfo */
 
-$this->title = $model->getAddressName();
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Meters'), 'url' => ['index']];
+$this->title = Yii::t('app', 'Bill Info: ') . $model->title;
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Bill Infos'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="meter-view">
+<div class="bill-info-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -28,15 +28,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'address_id',
-            'bill_info_id',
-//            'qr_code_file',
-            'latitude',
-            'longitude',
-            'reading',
+            'title',
+            'unit_price',
+            'discount',
+            'processing_fee',
+            'submission_start',
+            'submission_end',
             'created_at',
-            'update_at',
+            'updated_at',
             'created_by',
             'updated_by',
             'status',

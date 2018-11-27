@@ -20,14 +20,19 @@ use yii\widgets\ActiveForm;
             ?>
         </div>
         <div class="col-md-4 col-lg-4">
-            <?= $form->field($model, 'serial_number')->textInput(['maxlength' => true]) ?>
+            <?php echo $form->field($model, 'bill_info_id')->dropDownList($bill_infos, [
+                'prompt' => Yii::t('app', 'Bill info'),
+            ]);
+            ?>
         </div>
         <div class="col-md-4 col-lg-4">
-            <?php echo $form->field($model, 'qr_code_image')
-                ->fileInput([
-                    'accept' => 'image/*',
-                    'placeholder' => Yii::t('app', 'QRCode Image')
-                ])->label(Yii::t('app', 'QRCode Image')); ?>
+            <?php
+//            echo $form->field($model, 'qr_code_image')
+//                ->fileInput([
+//                    'accept' => 'image/*',
+//                    'placeholder' => Yii::t('app', 'QRCode Image')
+//                ])->label(Yii::t('app', 'QRCode Image'));
+            ?>
         </div>
     </div>
     <div class="row">

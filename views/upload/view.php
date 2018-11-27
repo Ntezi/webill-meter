@@ -31,7 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
 //            'user_id',
-//            'bill_info_id',
             'previous_reading',
             'current_reading',
             'image_file',

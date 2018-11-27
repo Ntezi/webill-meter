@@ -97,6 +97,17 @@ class User extends BaseUser implements IdentityInterface
 
     }
 
+    public static function getConsumerCurrentBillInfo($user_id)
+    {
+        $meter = self::getConsumerCurrentMeter($user_id);
+        if (!empty($meter)) {
+            $bill_info = BillInfo::findOne(['id' => $meter->bill_info_id]);
+            if (!empty($bill_info)) {
+                return $bill_info;
+            }
+        }
+
+    }
 
     public static function getConsumerCurrentMeter($user_id)
     {

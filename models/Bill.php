@@ -33,7 +33,7 @@ class Bill extends BaseBill
     {
         return [
             [['user_id'], 'required'],
-            [['user_id', 'bill_info_id', 'verified_by_user', 'verified_by_admin', 'created_by', 'updated_by', 'paid_flag'], 'integer'],
+            [['user_id', 'verified_by_user', 'verified_by_admin', 'created_by', 'updated_by', 'paid_flag'], 'integer'],
             [['previous_reading', 'total_amount'], 'number'],
             [['created_at', 'updated_at', 'deadline'], 'safe'],
             [['image_file', 'bill_file_path'], 'string', 'max' => 255],

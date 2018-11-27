@@ -2,30 +2,41 @@
 
 namespace app\controllers;
 
-use app\models\Address;
-use app\components\AdminController;
-use app\models\BillInfo;
 use Yii;
-use app\models\Meter;
+use app\models\BillInfo;
 use yii\data\ActiveDataProvider;
-use yii\helpers\ArrayHelper;
+use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\web\UploadedFile;
+use yii\filters\VerbFilter;
 
 /**
- * MeterController implements the CRUD actions for Meter model.
+ * BillInfoController implements the CRUD actions for BillInfo model.
  */
-class MeterController extends AdminController
+class BillInfoController extends Controller
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
 
     /**
-     * Lists all Meter models.
+     * Lists all BillInfo models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Meter::find()->where(['status' => Yii::$app->params['active_status']]),
+            'query' => BillInfo::find(),
         ]);
 
         return $this->render('index', [
@@ -34,7 +45,7 @@ class MeterController extends AdminController
     }
 
     /**
-     * Displays a single Meter model.
+     * Displays a single BillInfo model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -47,38 +58,30 @@ class MeterController extends AdminController
     }
 
     /**
-     * Creates a new Meter model.
+     * Creates a new BillInfo model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Meter();
-//        $model->scenario = 'create';
+        $model = new BillInfo();
 
-        $addresses = ArrayHelper::map(Address::find()
-            ->orderBy('building_name')
-            ->all(), 'id', 'building_name');
-
-        $bill_infos = ArrayHelper::map(BillInfo::find()
-            ->orderBy('title')
-            ->all(), 'id', 'title');
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->qr_code_image = $model->address->full_address;
+        if ($model->load(Yii::$app->request->post())) {
+            $model->unit_price = 200;
+            $model->discount = 80;
+            $model->tax = 0.08;
+            $model->processing_fee = 50;
+            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
-        Yii::error(print_r($model->getErrors(), true));
 
         return $this->render('create', [
             'model' => $model,
-            'addresses' => $addresses,
-            'bill_infos' => $bill_infos,
         ]);
     }
 
     /**
-     * Updates an existing Meter model.
+     * Updates an existing BillInfo model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -88,27 +91,17 @@ class MeterController extends AdminController
     {
         $model = $this->findModel($id);
 
-        $addresses = ArrayHelper::map(Address::find()
-            ->orderBy('building_name')
-            ->all(), 'id', 'building_name');
-
-        $bill_infos = ArrayHelper::map(BillInfo::find()
-            ->orderBy('title')
-            ->all(), 'id', 'title');
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
-        Yii::error(print_r($model->getErrors(), true));
+
         return $this->render('update', [
             'model' => $model,
-            'addresses' => $addresses,
-            'bill_infos' => $bill_infos,
         ]);
     }
 
     /**
-     * Deletes an existing Meter model.
+     * Deletes an existing BillInfo model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -116,23 +109,21 @@ class MeterController extends AdminController
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-        $model->status = Yii::$app->params['inactive_status'];
-        $model->save();
+        $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the Meter model based on its primary key value.
+     * Finds the BillInfo model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Meter the loaded model
+     * @return BillInfo the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Meter::findOne($id)) !== null) {
+        if (($model = BillInfo::findOne($id)) !== null) {
             return $model;
         }
 

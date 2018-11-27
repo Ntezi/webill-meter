@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int $address_id
+ * @property int $bill_info_id
  * @property string $serial_number
  * @property string $qr_code_file
  * @property double $latitude
@@ -21,6 +22,7 @@ use Yii;
  * @property int $status 0:inactive; 1:active
  *
  * @property Address $address
+ * @property BillInfo $billInfo
  * @property UserHasMeter[] $userHasMeters
  */
 class Meter extends \yii\db\ActiveRecord
@@ -39,12 +41,13 @@ class Meter extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['address_id', 'qr_code_file', 'latitude', 'longitude'], 'required'],
-            [['address_id', 'created_by', 'updated_by', 'status'], 'integer'],
+            [['address_id', 'bill_info_id', 'qr_code_file', 'latitude', 'longitude'], 'required'],
+            [['address_id', 'bill_info_id', 'created_by', 'updated_by', 'status'], 'integer'],
             [['latitude', 'longitude', 'reading'], 'number'],
             [['created_at', 'update_at'], 'safe'],
             [['serial_number', 'qr_code_file'], 'string', 'max' => 255],
             [['address_id'], 'exist', 'skipOnError' => true, 'targetClass' => Address::className(), 'targetAttribute' => ['address_id' => 'id']],
+            [['bill_info_id'], 'exist', 'skipOnError' => true, 'targetClass' => BillInfo::className(), 'targetAttribute' => ['bill_info_id' => 'id']],
         ];
     }
 
@@ -56,6 +59,7 @@ class Meter extends \yii\db\ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'address_id' => Yii::t('app', 'Address ID'),
+            'bill_info_id' => Yii::t('app', 'Bill Info ID'),
             'serial_number' => Yii::t('app', 'Serial Number'),
             'qr_code_file' => Yii::t('app', 'Qr Code File'),
             'latitude' => Yii::t('app', 'Latitude'),
@@ -75,6 +79,14 @@ class Meter extends \yii\db\ActiveRecord
     public function getAddress()
     {
         return $this->hasOne(Address::className(), ['id' => 'address_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBillInfo()
+    {
+        return $this->hasOne(BillInfo::className(), ['id' => 'bill_info_id']);
     }
 
     /**
