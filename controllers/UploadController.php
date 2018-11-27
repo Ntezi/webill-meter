@@ -145,7 +145,7 @@ class UploadController extends ClientController
                     Yii::warning('$current_reading: ' . print_r($current_reading, true));
                     if (!$model->checkCurrentReading($current_reading)) {
                         Yii::warning('current_reading: ' . $model->current_reading);
-                        Yii::$app->session->setFlash("danger", Yii::t('app', 'The previous reading is greater than the current reading!'));
+                        Yii::$app->session->setFlash("danger", Yii::t('app', 'The previous (' . $current_reading . ') reading is greater than the current reading!'));
                     } elseif ($model->save()) {
                         $uploaded_file = UploadedFile::getInstance($model, 'image');
                         if ($uploaded_file) {

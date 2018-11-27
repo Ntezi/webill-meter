@@ -128,6 +128,8 @@ class Bill extends BaseBill
             } else {
                 return false;
             }
+        } else {
+            return false;
         }
     }
 
@@ -235,7 +237,7 @@ class Bill extends BaseBill
         if (!empty($bill_info)) {
             $consumption = $this->current_reading - $this->previous_reading;
             $cost = ($consumption * $bill_info->unit_price + $bill_info->unit_price + 0.08);
-            return  $cost - $bill_info->discount;
+            return $cost - $bill_info->discount;
         }
     }
 
