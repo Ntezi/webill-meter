@@ -8,6 +8,8 @@ return [
     'consumer_role' => 1,
     'active_status' => 1,
     'inactive_status' => 0,
+    'active_user' => 10,
+    'inactive_user' => 0,
     'not_paid_bill_flag' => 0,
     'paid_bill_flag' => 1,
     'pending_bill_flag' => 2,

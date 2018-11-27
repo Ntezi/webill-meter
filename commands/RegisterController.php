@@ -6,13 +6,12 @@
  * Time: 10:38 AM
  */
 
-namespace console\controllers;
+namespace app\commands;
 
 
 use Yii;
 use yii\base\Exception;
 use yii\console\Controller;
-use console\models\User;
 
 class RegisterController extends Controller {
 

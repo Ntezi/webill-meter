@@ -73,11 +73,11 @@ class User extends BaseUser implements IdentityInterface
         $body .= "Please use this password: <b>" . $password . " </b>";
 
         if ($role == Yii::$app->params['consumer_role']) {
-            $body .= " to login at <a href=" . Yii::$app->params['client_url'] . ">Webill</a> " . "<br/>";
+            $body .= " to login at Webill as Consumer user.</a> " . "<br/>";
         }
 
         if ($role == Yii::$app->params['admin_role']) {
-            $body .= " to login at <a href=" . Yii::$app->params['admin_url'] . ">Webill Admin</a>  as an admin user. " . "<br/>";
+            $body .= " to login at Webill Admin as an admin user. " . "<br/>";
         }
 
         $body .= "You may change it later after successfully logged in";
@@ -108,6 +108,21 @@ class User extends BaseUser implements IdentityInterface
                 return $meter;
         }
 
+    }
+
+    public static function registerConsumer($email)
+    {
+        $admin = new User();
+        $admin->email = $email;
+        $admin->username = $email;
+        $password = Yii::$app->security->generateRandomString(6);
+        $admin->setPassword($password);
+        $admin->status = User::STATUS_ACTIVE;
+        $admin->role = Yii::$app->params['consumer_role'];
+
+        if ($admin->save()) {
+            User::registeredMessage($email, $password, $admin->role);
+        }
     }
 
 }

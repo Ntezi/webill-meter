@@ -23,7 +23,7 @@ class ConsumerController extends AdminController
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => User::find()->where(['role' => Yii::$app->params['consumer_role'], 'status' => User::STATUS_ACTIVE]),
+            'query' => User::find()->where(['role' => Yii::$app->params['consumer_role']]),
         ]);
 
         return $this->render('index', [
@@ -55,46 +55,17 @@ class ConsumerController extends AdminController
     public function actionCreate()
     {
         $model = new User();
-
         $address_model = new Address();
         $addresses = Address::find()->all();
         if ($model->load(Yii::$app->request->post())) {
-
-            $transaction = $model->getDb()->beginTransaction();
-            try {
-
-                if ($model->save()) {
-                    $post = Yii::$app->request->post('Address');
-
-                    if (!empty($post['address'])) {
-                        $meter = Meter::getMeter($post);
-                        if (!empty($meter)) {
-                            $user_has_meter = new UserHasMeter();
-                            if ($user_has_meter->checkTakenMeter($meter->id)) {
-                                $user_has_meter->user_id = $model->id;
-                                $user_has_meter->meter_id = $meter->id;
-                                $user_has_meter->started_at = date("Y-m-d H:i:s");
-                                $user_has_meter->save();
-
-                                $error = $user_has_meter->getErrors();
-                                Yii::error(print_r($error, true));
-                            } else {
-                                Yii::$app->session->setFlash("danger", Yii::t('app', 'This meter has already been taken'));
-                            }
-                        } else {
-                            Yii::$app->session->setFlash("danger", Yii::t('app', 'No meter assigned to the address!'));
-                        }
-                    }
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                }
-
-            } catch (\Exception $e) {
-                $transaction->rollBack();
-                throw $e;
-            } catch (\Throwable $e) {
-                $transaction->rollBack();
-                throw $e;
+            $model->username = $model->email;
+            $password = Yii::$app->security->generateRandomString(6);
+            $model->setPassword($password);
+            $model->status = User::STATUS_ACTIVE;
+            $model->role = Yii::$app->params['consumer_role'];
+            if ($model->save()) {
+                User::registeredMessage($model->email, $password, $model->role);
+                return $this->redirect(['view', 'id' => $model->id]);
             }
         }
 
@@ -181,6 +152,14 @@ class ConsumerController extends AdminController
     {
         $model = $this->findModel($id);
         $model->status = User::STATUS_DELETED;
+        $model->save();
+
+        return $this->redirect(['index']);
+    }
+    public function actionActivate($id)
+    {
+        $model = $this->findModel($id);
+        $model->status = User::STATUS_ACTIVE;
         $model->save();
 
         return $this->redirect(['index']);

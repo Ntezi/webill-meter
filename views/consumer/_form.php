@@ -30,15 +30,15 @@ use kartik\typeahead\Typeahead;
     <div class="row">
 
         <div class="col-md-12 col-lg-12">
-            <?php if (!$model->isNewRecord && $current_address != null) : ?>
-
-                <div class="alert alert-info">
-                    <strong>Meter Address:</strong>
-                    <?php echo $current_address ?>
-                </div>
-
-            <?php endif; ?>
-            <?php if ($current_address == null) : $addresses_ = array();
+            <?php if (!$model->isNewRecord) :
+                if ($current_address != null) : ?>
+                    <div class="alert alert-info">
+                        <strong>Meter Address:</strong>
+                        <?php echo $current_address ?>
+                    </div>
+                <?php endif; ?>
+                <?php if ($current_address == null) :
+                $addresses_ = array();
 
                 if (!empty($addresses)) {
                     foreach ($addresses as $address):
@@ -51,7 +51,8 @@ use kartik\typeahead\Typeahead;
                     'options' => ['placeholder' => 'Search address'],
                     'pluginOptions' => ['highlight' => true,],
                     'dataset' => [['local' => $addresses_, 'limit' => 10],]
-                ]); endif; ?>
+                ]);endif;
+            endif; ?>
         </div>
     </div>
 
