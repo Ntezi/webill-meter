@@ -23,15 +23,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'deadline',
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{update} {delete} {submit}',
+                'template' => '{download}',
                 'buttons' => [
                     'download' => function ($url, $model) {
-                        if ($model->verified_by_user == Yii::$app->params['verified_no'])
-                            return Html::a(Html::tag('i', Yii::t('app', ' Download'), ['class' => 'fa fa-thumbs-up']), $url, [
-                                'class' => 'btn btn-success btn-xs',
+                        if ($model->paid_flag == Yii::$app->params['not_paid_bill_flag'])
+                            return Html::a(Html::tag('i', Yii::t('app', ' Download'), ['class' => 'fa fa-download']),
+                                ['invoice/index', 'id' => $model->id], [
+                                'class' => 'btn btn-success',
                                 'data' => [
                                     'confirm' => Yii::t('app', '\'Are you sure you want to download this bill?'),
-                                    'method' => 'post',
                                 ],
                             ]);
                     },

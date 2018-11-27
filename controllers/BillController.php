@@ -30,15 +30,15 @@ class BillController extends AdminController
             if (!empty($meter)) {
 
                 $bill->previous_reading = $meter->reading;
-//                        $bill->verified_by_admin = Yii::$app->params['verified_yes'];
+                $bill->verified_by_admin = Yii::$app->params['verified_yes'];
                 $bill->total_amount = $bill->calculateBill($meter->bill_info_id);
                 $bill->paid_flag = Yii::$app->params['not_paid_bill_flag'];
                 $bill->deadline = date('Y-m-d', strtotime('+1 month'));
 
                 if ($bill->save()) {
                     $meter->reading = $bill->current_reading;
-                    if ($meter->save()){
-                        Notification::sendBillApprovalNotification($bill->user_id,Yii::$app->user->identity->getId(),$bill->id);
+                    if ($meter->save()) {
+                        Notification::sendBillApprovalNotification($bill->user_id, Yii::$app->user->identity->getId(), $bill->id);
                         Yii::$app->session->setFlash("success", Yii::t('app', 'Bill approved'));
                     }
 

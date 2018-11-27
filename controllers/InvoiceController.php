@@ -14,6 +14,7 @@ class InvoiceController extends ClientController
         $model = $this->findModel($id);
 
         $pdf = Yii::$app->pdf;
+        $pdf->filename = 'Invoice_No_' . $model->id;
         $pdf->content = $this->renderPartial('index', [
             'model' => $model,
         ]);

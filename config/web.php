@@ -68,13 +68,13 @@ $config = [
             'class' => Pdf::classname(),
             'format' => Pdf::FORMAT_A4,
             'orientation' => Pdf::ORIENT_PORTRAIT,
-            'destination' => Pdf::DEST_BROWSER,
+            'destination' => Pdf::DEST_DOWNLOAD,
             'cssFile' => '@vendor/kartik-v/yii2-mpdf/src/assets/kv-mpdf-bootstrap.min.css',
             'cssInline' => '.kv-heading-1{font-size:18px}',
-            'options' => ['title' => 'WeBill Invoice'],
+            'options' => ['title' => 'Cleanergy'],
             'methods' => [
                 'SetHeader'=>['WeBill Invoice'],
-                'SetFooter'=>['{PAGENO}'],
+                'SetFooter'=>['Cleanergy'],
             ]
         ]
 
