@@ -61,7 +61,7 @@ use yii\grid\GridView;
 
                     'check' => function ($url, $model) {
                         if ($model->verified_by_admin != Yii::$app->params['verified_yes'])
-                            return Html::a(Html::tag('i', Yii::t('app', ' Check'), ['class' => 'fa fa-edit']), ['bill/index', 'id' => $model->id],
+                            return Html::a(Html::tag('i', Yii::t('app', ' Check'), ['class' => 'fa fa-eye']), ['bill/index', 'id' => $model->id],
                                 ['class' => 'btn btn-primary btn-xs']);
                     },
                     'approve' => function ($url, $model) {

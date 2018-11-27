@@ -26,12 +26,12 @@ class AdminController extends Controller
                     'class' => AccessRule::className(),
                 ],*/
                 'only' => [
-                    'index', 'create', 'update', 'view', 'delete', 'remove', 'activate',
+                    'index', 'create', 'update', 'view', 'delete', 'remove', 'activate', 'approve',
                 ],
                 'rules' => [
                     [
                         'actions' => [
-                            'index', 'create', 'update', 'view', 'delete', 'remove', 'activate',
+                            'index', 'create', 'update', 'view', 'delete', 'remove', 'activate', 'approve',
                         ],
                         'allow' => true,
                         'matchCallback' => function ($rule, $action) {
@@ -52,6 +52,7 @@ class AdminController extends Controller
                     'remove' => ['POST'],
                     'submit' => ['POST'],
                     'activate' => ['POST'],
+                    'approve' => ['POST'],
                 ],
             ],
         ];

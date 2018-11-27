@@ -42,9 +42,9 @@ class UploadController extends ClientController
     public function actionView($id)
     {
         $model = $this->findModel($id);
-//        return $this->redirect(['index']);
         return $this->render('view', [
             'model' => $model,
+            'check_bill' => $model->checkBill(),
         ]);
     }
 
@@ -61,8 +61,6 @@ class UploadController extends ClientController
 
             $transaction = $model->getDb()->beginTransaction();
             try {
-
-                Yii::warning('Before upload');
                 $meter = User::getConsumerCurrentMeter(Yii::$app->user->identity->id);
                 if (!empty($meter)) {
                     $model->user_id = Yii::$app->user->identity->id;
@@ -75,13 +73,16 @@ class UploadController extends ClientController
                         if ($uploaded_file) {
                             if ($model->uploadImage($uploaded_file)) {
 
-                                $model->saveMeterReading();
-                                $model->checkBill();
-                                Yii::$app->session->setFlash("success", Yii::t('app', 'Successfully uploaded'));
+                                if ($model->saveMeterReading()) {
+                                    Yii::$app->session->setFlash("success", Yii::t('app', 'The system was able to read successfully the reading'));
+                                } else {
+                                    Yii::$app->session->setFlash("warning", Yii::t('app', 'The system was not able to read the reading. Please contact the admin'));
+                                }
+
                                 $transaction->commit();
                                 return $this->redirect(['update', 'id' => $model->id]);
                             } else {
-                                Yii::$app->session->setFlash("warning", Yii::t('app', 'Problem occurred while uploading'));
+                                Yii::$app->session->setFlash("warning", Yii::t('app', 'Problem occurred while uploading. Please contact the admin'));
                                 $transaction->rollBack();
                             }
                         } else {
@@ -98,7 +99,7 @@ class UploadController extends ClientController
                     }
 
                 } else {
-                    Yii::$app->session->setFlash("danger", Yii::t('app', 'No meter assigned to you!'));
+                    Yii::$app->session->setFlash("danger", Yii::t('app', 'No meter assigned to you! Please contact the admin'));
                     $transaction->rollBack();
                     return $this->redirect(['create']);
                 }
@@ -149,12 +150,15 @@ class UploadController extends ClientController
                         $uploaded_file = UploadedFile::getInstance($model, 'image');
                         if ($uploaded_file) {
                             if ($model->uploadImage($uploaded_file)) {
-                                Yii::$app->session->setFlash("success", Yii::t('app', 'Successfully uploaded'));
-                                $model->saveMeterReading();
-                                $model->checkBill();
+                                if ($model->saveMeterReading()) {
+                                    Yii::$app->session->setFlash("success", Yii::t('app', 'The system was able to read successfully the reading'));
+                                } else {
+                                    Yii::$app->session->setFlash("warning", Yii::t('app', 'The system was not able to read the reading. Please contact the admin'));
+                                }
+
                             } else {
                                 $transaction->rollBack();
-                                Yii::$app->session->setFlash("warning", Yii::t('app', 'Problem occurred while uploading'));
+                                Yii::$app->session->setFlash("warning", Yii::t('app', 'Problem occurred while uploading. Please contact the admin'));
                             }
                         }
                         $transaction->commit();
@@ -167,7 +171,7 @@ class UploadController extends ClientController
                     }
                 } else {
                     $transaction->rollBack();
-                    Yii::$app->session->setFlash("warning", Yii::t('app', 'No meter assigned to you!'));
+                    Yii::$app->session->setFlash("warning", Yii::t('app', 'No meter assigned to you! Please contact the admin'));
                 }
 
             } catch (\Exception $e) {
@@ -181,7 +185,6 @@ class UploadController extends ClientController
 
         return $this->render('update', [
             'model' => $model,
-            'check_bill' => $model->checkBill(),
         ]);
     }
 
@@ -218,9 +221,18 @@ class UploadController extends ClientController
     public function actionSubmit($id)
     {
         $model = $this->findModel($id);
-        $model->verified_by_user = Yii::$app->params['verified_yes'];
-        $model->save();
+        $check_bill = $model->checkBill();
 
-        return $this->redirect(['index']);
+        if ($check_bill['qr_code_check'] === 'ok' && $check_bill['location_check'] === 'ok') {
+            $model->verified_by_user = Yii::$app->params['verified_yes'];
+            $model->save();
+            return $this->redirect(['index']);
+        } else {
+            Yii::$app->session->setFlash("warning", Yii::t('app', 'Could not match location and QR code! Please upload again another picture.'));
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+
+
     }
 }

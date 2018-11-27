@@ -31,7 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'address_id',
             'bill_info_id',
-//            'qr_code_file',
             'latitude',
             'longitude',
             'reading',

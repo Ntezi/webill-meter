@@ -35,25 +35,5 @@ use yii\widgets\ActiveForm;
             </div>
         </div>
         <?php ActiveForm::end(); ?>
-
-        <?php if (!$model->isNewRecord && !empty($check_bill)): //print_r($check_bill)?>
-
-            <div class="col-md-4 col-lg-4" style="margin: 50px;">
-                <ul class="list-group">
-                    <li class="list-group-item">
-                    <span class="badge">
-                        <?= $check_bill['qr_code_check'] ?>
-                    </span>
-                        <?= Yii::t('app', 'QR Code Check') ?>
-                    </li>
-                    <li class="list-group-item">
-                    <span class="badge">
-                        <?= $check_bill['location_check'] ?>
-                    </span>
-                        <?= Yii::t('app', 'Location Check') ?>
-                    </li>
-                </ul>
-            </div>
-        <?php endif; ?>
     </div>
 </div>

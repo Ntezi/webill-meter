@@ -24,27 +24,60 @@ $this->params['breadcrumbs'][] = $this->title;
                     'method' => 'post',
                 ],
             ]) ?>
+            <?= Html::a(Yii::t('app', ' Submit'), ['submit', 'id' => $model->id], [
+                'class' => 'btn btn-success',
+                'data' => [
+                    'confirm' => Yii::t('app', '\'Are you sure you want to submit this information?'),
+                    'method' => 'post',
+                ],
+            ]); ?>
         </p>
     <?php endif; ?>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-//            'user_id',
-            'previous_reading',
-            'current_reading',
-            'image_file',
-            'bill_file_path',
-            'total_amount',
-            'verified_by_user',
-            'verified_by_admin',
-//            'created_at',
-//            'created_by',
-//            'updated_by',
-//            'updated_at',
-            'deadline',
-            'paid_flag',
-        ],
-    ]) ?>
 
+    <div class="col-md-8 col-lg-8">
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'id',
+                [
+                    'attribute' => 'image_file',
+                    'format'=>'html',
+                    'value' => function ($model) {
+
+                        return Html::img($model->getImagePath(), ['width' => '100px']);
+                    },
+                ],
+                'previous_reading',
+                'current_reading',
+                'total_amount',
+                'verified_by_user',
+                'verified_by_admin',
+                'created_at',
+                'created_by',
+                'updated_by',
+                'updated_at',
+                'deadline',
+                'paid_flag',
+            ],
+        ]) ?>
+    </div>
+    <?php if (!$model->isNewRecord && !empty($check_bill)): ?>
+
+        <div class="col-md-4 col-lg-4">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <span class="badge">
+                        <?php echo ($check_bill['qr_code_check'] === 'ok') ? '<i class="fa fa-thumbs-up"></i>' : '<i class="fa fa-thumbs-down"></i>'; ?>
+                    </span>
+                    <?= Yii::t('app', 'QR Code Check') ?>
+                </li>
+                <li class="list-group-item">
+                    <span class="badge">
+                        <?php echo ($check_bill['location_check'] === 'ok') ? '<i class="fa fa-thumbs-up"></i>' : '<i class="fa fa-thumbs-down"></i>'; ?>
+                    </span>
+                    <?= Yii::t('app', 'Location Check') ?>
+                </li>
+            </ul>
+        </div>
+    <?php endif; ?>
 </div>

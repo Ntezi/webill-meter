@@ -51,9 +51,33 @@ class Meter extends BaseMeter
         ];
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'address_id' => Yii::t('app', 'Address ID'),
+            'bill_info_id' => Yii::t('app', 'Bill Info ID'),
+            'serial_number' => Yii::t('app', 'Serial Number'),
+            'qr_code_file' => Yii::t('app', 'Qr Code File'),
+            'latitude' => Yii::t('app', 'Latitude'),
+            'longitude' => Yii::t('app', 'Longitude'),
+            'reading' => Yii::t('app', 'Reading'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'update_at' => Yii::t('app', 'Update At'),
+            'created_by' => Yii::t('app', 'Created By'),
+            'updated_by' => Yii::t('app', 'Updated By'),
+            'status' => Yii::t('app', 'Status'),
+        ];
+    }
+
     public function getAddressName()
     {
         return Address::findOne(['id' => $this->address_id])->building_name;
+    }
+
+    public function getBillInfoTitle()
+    {
+        return BillInfo::findOne(['id' => $this->bill_info_id])->title;
     }
 
     public static function getMeter($post)

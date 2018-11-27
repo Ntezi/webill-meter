@@ -78,11 +78,10 @@ class UploadHelper
             //$path = getenv('PATH');
             //putenv("PATH=$path:C:\Program Files (x86)\Tesseract-OCR");
             $ocr = new TesseractOCR();
-            $ocr->image($image_path);
-            $ocr->executable("/usr/local/bin/tesseract");
-            $text = $ocr->run();
+            $text = $ocr->image($image_path)->executable("/usr/local/bin/tesseract")->run();
             //$text = getenv('PATH');;
             Yii::warning('ocr text: ' . $text);
+
             return $text;
         } catch (ErrorException $e) {
             Yii::$app->session->setFlash("danger", Yii::t('app', $e));
@@ -155,7 +154,7 @@ class UploadHelper
             Yii::warning('height : ' . $height);
 
             $min_width = 100;
-            $max_width = 512;
+            $max_width = 256;
 
             if ($width > $min_width) {
                 $image->fromFile($image_file)->resize($max_width)->toFile($file_dir . 'new_'. $file_name);

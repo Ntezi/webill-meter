@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Bill;
 use app\models\Meter;
+use app\models\Notification;
 use app\models\User;
 use app\helpers\UploadHelper;
 use Yii;
@@ -14,51 +15,39 @@ class BillController extends AdminController
 {
     public function actionIndex($id)
     {
+        $model = $this->findModel($id);
+        return $this->render('index', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionApprove($id)
+    {
         $bill = $this->findModel($id);
 
         if (!empty($bill)) {
+            $meter = User::getConsumerCurrentMeter($bill->user_id);
+            if (!empty($meter)) {
 
-            //Read QR Code
-            $bill_qr = $bill->readBillQRCode();
+                $bill->previous_reading = $meter->reading;
+//                        $bill->verified_by_admin = Yii::$app->params['verified_yes'];
+                $bill->total_amount = $bill->calculateBill($meter->bill_info_id);
+                $bill->paid_flag = Yii::$app->params['not_paid_bill_flag'];
+                $bill->deadline = date('Y-m-d', strtotime('+1 month'));
 
-            //Read image with OCR
-            $current_reading = $bill->getMeterCurrentReading();
+                if ($bill->save()) {
+                    $meter->reading = $bill->current_reading;
+                    if ($meter->save()){
+                        Notification::sendBillApprovalNotification($bill->user_id,Yii::$app->user->identity->getId(),$bill->id);
+                        Yii::$app->session->setFlash("success", Yii::t('app', 'Bill approved'));
+                    }
 
-            if ($bill_qr != null) {
-                Yii::$app->session->setFlash("success", Yii::t('app', 'QR Code: ' . $current_reading));
+                }
             }
 
-
-//            $meter = User::getConsumerCurrentMeter($bill->user_id);
-//            if (!empty($meter)) {
-//
-//                $bill_qr = $bill->readBillQRCode();
-//                $meter_qr = $meter->readMeterQRCode();
-//
-//                if ($meter_qr != null && $bill_qr != null) {
-//                    if ($meter_qr == $bill_qr) {
-//
-//                        $bill->previous_reading = $meter->reading;
-////                        $bill->verified_by_admin = Yii::$app->params['verified_yes'];
-//                        $bill->total_amount = $bill->calculateBill();
-//                        $bill->paid_flag = Yii::$app->params['pending_bill_flag'];
-//                        $bill->deadline = date('Y-m-di', strtotime('+1 month'));
-//                        $bill->save();
-//
-//
-//
-//                        // Update the meter
-//
-//                        Yii::$app->session->setFlash("success", Yii::t('app', 'Successfully Matched '));
-//                    } else {
-//                        Yii::$app->session->setFlash("warning", Yii::t('app', 'Not Matched '));
-//                    }
-//                }
-//            }
-
             return $this->redirect(['site/index']);
-        }
 
+        }
     }
 
     /**

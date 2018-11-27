@@ -51,9 +51,9 @@ class AddressController extends AdminController
         $model = new Address();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->building_name = $model->building_name . " - " .
-                $model->full_address . " - " . $model->district . " - " .
-                $model->town . " - " . $model->ward . " - " . $model->city;
+            $model->full_address = $model->building_name . " # " .
+                $model->street_number . " # " . $model->district . " # " .
+                $model->town . " # " . $model->ward . " # " . $model->city. " # " . $model->prefecture;
             $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -77,7 +77,7 @@ class AddressController extends AdminController
         if ($model->load(Yii::$app->request->post())) {
             $model->full_address = $model->building_name . " # " .
                 $model->street_number . " # " . $model->district . " # " .
-                $model->town . " # " . $model->ward . " # " . $model->city;
+                $model->town . " # " . $model->ward . " # " . $model->city. " # " . $model->prefecture;
             $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }

@@ -21,7 +21,7 @@ class QRCodeHelper
         try {
             $qrcode = new QrReader($path);
             $text = $qrcode->text(); //return decoded text from QR Code
-            Yii::warning('text: ' . $text);
+            Yii::warning('qrcode text: ' . $text);
             return $text;
         } catch (ErrorException $e) {
             Yii::$app->session->setFlash("danger", Yii::t('app', $e));

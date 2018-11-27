@@ -38,8 +38,6 @@ class Bill extends BaseBill
             [['created_at', 'updated_at', 'deadline'], 'safe'],
             [['image_file', 'bill_file_path'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
-            [['bill_info_id'], 'exist', 'skipOnError' => true, 'targetClass' => BillInfo::className(), 'targetAttribute' => ['bill_info_id' => 'id']],
-
             [['image'], 'safe'],
             [['image'], 'file', 'skipOnEmpty' => true, 'extensions' => ['png', 'jpg', 'jpeg', 'gif'], 'maxSize' => 1024 * 1024],
         ];
@@ -92,19 +90,17 @@ class Bill extends BaseBill
 
     public function getImageAbsolutePath()
     {
-        $image = $this->user_id . '/' . $this->id . '/' . 'new_'. $this->image_file;
+        $image = $this->user_id . '/' . $this->id . '/' . 'new_' . $this->image_file;
         return Yii::getAlias('@app') . '/web/uploads/bills/' . $image;
     }
 
     public function readBillQRCode()
     {
-        Yii::warning('bills path: ' . $this->getImagePath());
         return QRCodeHelper::ReadQRCode($this->getImageAbsolutePath());
     }
 
     public function getMeterCurrentReading()
     {
-        Yii::warning('getImageAbsolutePath: ' . $this->getImageAbsolutePath());
         return UploadHelper::getReadImage($this->getImageAbsolutePath());
     }
 
@@ -112,10 +108,13 @@ class Bill extends BaseBill
     {
         //Read image with OCR
         $current_reading = $this->getMeterCurrentReading();
-        if ($current_reading != null) {
+        if ($current_reading != '') {
             $this->current_reading = $current_reading;
             if ($this->save()) {
-                $this->readBillQRCode();
+                Yii::warning('getMeterCurrentReading: ' . $current_reading);
+                return true;
+            } else {
+                return false;
             }
         }
     }
@@ -138,18 +137,23 @@ class Bill extends BaseBill
         Yii::warning('current_address : ' . $current_address);
         Yii::warning('readBillQRCode : ' . $this->readBillQRCode());
 
-        if ($current_address !== null && $current_address === $this->readBillQRCode()) {
-            return '<i class="fa fa-thumbs-up"></i>';
+        if ($this->readBillQRCode() != '') {
+            if ($current_address !== null && $current_address === $this->readBillQRCode()) {
+                return 'ok';
+            } else {
+                return 'no';
+            }
         } else {
-            return '<i class="fa fa-thumbs-down"></i>';
+            return 'no';
         }
+
     }
 
 
     public function checkLocation()
     {
         $meter = User::getConsumerCurrentMeter(Yii::$app->user->identity->getId());
-        if (!empty($meter)){
+        if (!empty($meter)) {
             $current_latitude = $meter->latitude;
             $current_longitude = $meter->longitude;
             $image_location = UploadHelper::getImageLocationInfo($this->getImagePath());
@@ -173,12 +177,15 @@ class Bill extends BaseBill
 
                     Yii::warning('$dinstance : ' . $distance);
 
-                    if ($distance <= 300) {
-                        return '<i class="fa fa-thumbs-up"></i>';
+                    if ($distance <= 800) {
+                        return 'ok';
                     } else {
-                        return '<i class="fa fa-thumbs-down"></i>';
+                        return 'no';
                     }
                 }
+            } else {
+
+                return 'no';
             }
 
         }
@@ -215,18 +222,21 @@ class Bill extends BaseBill
 
     public function checkBill()
     {
-        return array('qr_code_check' => $this->checkQRCode(), 'location_check' => $this->checkLocation(),);
+        Yii::warning('checkLocation : ' . $this->checkLocation());
+        return array('qr_code_check' => $this->checkQRCode(), 'location_check' => $this->checkLocation());
     }
 
     //Billing Formula
     //[consumption *unit_price + tax] - discount where
     //consumption = current_reading-previous_reading
-    public function calculateBill()
+    public function calculateBill($bill_info_id)
     {
-        $bill_info = BillInfo::findOne(1);
-        $consumption = $this->current_reading - $this->previous_reading;
-        return ($consumption * $bill_info->unit_price + $bill_info->unit_price + 0.08) - $bill_info->discount;
-
+        $bill_info = BillInfo::findOne($bill_info_id);
+        if (!empty($bill_info)) {
+            $consumption = $this->current_reading - $this->previous_reading;
+            $cost = ($consumption * $bill_info->unit_price + $bill_info->unit_price + 0.08);
+            return  $cost - $bill_info->discount;
+        }
     }
 
     public function getConsumerEmail()
