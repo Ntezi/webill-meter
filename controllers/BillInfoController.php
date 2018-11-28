@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\AdminController;
 use Yii;
 use app\models\BillInfo;
 use yii\data\ActiveDataProvider;
@@ -12,22 +13,8 @@ use yii\filters\VerbFilter;
 /**
  * BillInfoController implements the CRUD actions for BillInfo model.
  */
-class BillInfoController extends Controller
+class BillInfoController extends AdminController
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
 
     /**
      * Lists all BillInfo models.
