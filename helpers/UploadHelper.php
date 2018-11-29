@@ -78,7 +78,13 @@ class UploadHelper
             //$path = getenv('PATH');
             //putenv("PATH=$path:C:\Program Files (x86)\Tesseract-OCR");
             $ocr = new TesseractOCR();
-            $text = $ocr->image($image_path)->executable("/usr/local/bin/tesseract")->run();
+            $text = $ocr->image($image_path)
+//                ->lang('eng')
+//                ->oem(2)
+//                ->psm(6)
+                ->digits()
+                ->executable("/usr/local/bin/tesseract")
+                ->run();
             //$text = getenv('PATH');;
             Yii::warning('ocr text: ' . $text);
 

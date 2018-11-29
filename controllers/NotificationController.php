@@ -23,7 +23,7 @@ class NotificationController extends ClientController
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Notification::find(),
+            'query' => Notification::find()->where(['flag' => 0]),
         ]);
 
         return $this->render('index', [
@@ -39,8 +39,11 @@ class NotificationController extends ClientController
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        $model->flag = 1;
+        $model->save();
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 

@@ -77,6 +77,8 @@ class Bill extends BaseBill
             $label = Yii::t('app', 'Paid');
         } elseif ($this->paid_flag == Yii::$app->params['pending_bill_flag']) {
             $label = Yii::t('app', 'Pending');
+        } elseif ($this->paid_flag == Yii::$app->params['rejected_bill_flag']) {
+            $label = Yii::t('app', 'Rejected');
         }
 
         return $label;

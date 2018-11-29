@@ -30,7 +30,18 @@ $this->params['breadcrumbs'][] = $this->title;
             //'updated_by',
             //'flag',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{view}',
+                'buttons' => [
+
+                    'view' => function ($url, $model) {
+                        return Html::a(Html::tag('i', Yii::t('app', ' View'), ['class' => 'fa fa-eye']), $url,
+                            ['class' => 'btn btn-primary btn-xs']);
+                    },
+
+                ],
+            ],
         ],
     ]); ?>
 </div>

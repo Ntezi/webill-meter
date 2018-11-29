@@ -25,17 +25,6 @@ use yii\widgets\ActiveForm;
             <?= $form->field($model, 'processing_fee')->textInput() ?>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-4 col-lg-4">
-            <?= $form->field($model, 'submission_start')->textInput() ?>
-        </div>
-        <div class="col-md-4 col-lg-4">
-            <?= $form->field($model, 'submission_end')->textInput() ?>
-        </div>
-        <div class="col-md-4 col-lg-4">
-            <?= $form->field($model, 'status')->textInput() ?>
-        </div>
-    </div>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>

@@ -25,7 +25,8 @@ class UploadController extends ClientController
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Bill::find()
-                ->where(['user_id' => Yii::$app->user->identity->getId()]),
+                ->where(['user_id' => Yii::$app->user->identity->getId(), 'verified_by_user' => Yii::$app->params['verified_yes'], 'paid_flag' => null])
+                ->orWhere(['paid_flag' => Yii::$app->params['rejected_bill_flag']]),
         ]);
 
         return $this->render('index', [
@@ -225,13 +226,13 @@ class UploadController extends ClientController
 
         if ($check_bill['qr_code_check'] === 'ok' && $check_bill['location_check'] === 'ok') {
             $model->verified_by_user = Yii::$app->params['verified_yes'];
+            $model->paid_flag = Yii::$app->params['pending_bill_flag'];
             $model->save();
             return $this->redirect(['index']);
         } else {
             Yii::$app->session->setFlash("warning", Yii::t('app', 'Could not match location and QR code! Please upload again another picture.'));
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
 
 
     }

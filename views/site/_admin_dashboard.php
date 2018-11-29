@@ -20,7 +20,7 @@ use yii\grid\GridView;
             'id',
             [
                 'label' => 'QR Code',
-                'format'=>'html',
+                'format' => 'html',
                 'value' => function ($model) {
 
                     return Html::img($model->getImagePath(), ['width' => '60px']);
@@ -47,7 +47,7 @@ use yii\grid\GridView;
             //'updated_at',
             'deadline',
             [
-                'label' => 'Payment Status',
+                'label' => 'Status',
                 'format' => 'raw',
                 'value' => function ($model) {
                     return $model->getFlagLabel();
@@ -60,32 +60,30 @@ use yii\grid\GridView;
                 'buttons' => [
 
                     'check' => function ($url, $model) {
-                        if ($model->verified_by_admin != Yii::$app->params['verified_yes'])
-                            return Html::a(Html::tag('i', Yii::t('app', ' Check'), ['class' => 'fa fa-eye']), ['bill/index', 'id' => $model->id],
-                                ['class' => 'btn btn-primary btn-xs']);
+                        return Html::a(Html::tag('i', Yii::t('app', ' Check'), ['class' => 'fa fa-eye']), ['bill/index', 'id' => $model->id],
+                            ['class' => 'btn btn-primary btn-xs']);
                     },
                     'approve' => function ($url, $model) {
-                        //if ($model->verified_by_user == Yii::$app->params['verified_no'])
-                        return Html::a(Html::tag('i', Yii::t('app', ' Approve'), ['class' => 'fa fa-thumbs-up']), $url, [
+                        return Html::a(Html::tag('i', Yii::t('app', ' Approve'), ['class' => 'fa fa-thumbs-up']), ['bill/approve', 'id' => $model->id], [
                             'class' => 'btn btn-success btn-xs',
                             'data' => [
-                                'confirm' => Yii::t('app', '\'Are you sure you want to approve this information?'),
+                                'confirm' => Yii::t('app', '\'Are you sure you want to approve this bill information?'),
                                 'method' => 'post',
                             ],
                         ]);
                     },
                     'reject' => function ($url, $model) {
-                        if ($model->verified_by_admin != Yii::$app->params['verified_yes'])
-                            return Html::a(Html::tag('i', Yii::t('app', ' Reject'), ['class' => 'fa fa-trash']), $url, [
-                                'class' => 'btn btn-danger btn-xs',
-                                'data' => [
-                                    'confirm' => Yii::t('app', '\'Are you sure you want to delete this item?'),
-                                    'method' => 'post',
-                                ],
-                            ]);
+                        return Html::a(Html::tag('i', Yii::t('app', ' Reject'), ['class' => 'fa fa-trash']), ['bill/reject', 'id' => $model->id], [
+                            'class' => 'btn btn-danger btn-xs',
+                            'data' => [
+                                'confirm' => Yii::t('app', '\'Are you sure you want to reject this bill?'),
+                                'method' => 'post',
+                            ],
+                        ]);
                     },
 
-                ],],
+                ],
+            ],
         ],
     ]); ?>
 </div>

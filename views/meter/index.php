@@ -23,8 +23,20 @@ $this->params['breadcrumbs'][] = $this->title;
             //['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'address_id',
-            'bill_info_id',
+            [
+                'label' => 'Address',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $model->getAddressName();
+                },
+            ],
+            [
+                'label' => 'bill info',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return $model->getBillInfoTitle();
+                },
+            ],
             'latitude',
             'longitude',
             'reading',

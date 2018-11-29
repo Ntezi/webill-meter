@@ -37,32 +37,48 @@ class Notification extends BaseNotification
         ];
     }
 
-    public static function sendBillApprovalNotification($to_id, $from_id, $bill_id)
+    public static function sendBillNotification($to_id, $from_id, $bill_id, $status)
     {
         $notification = new self();
         $notification->to_id = $to_id;
         $notification->from_id = $from_id;
-        $notification->subject = 'Bill Approved';
         $notification->bill_id = $bill_id;
-        $notification->message = self::getMessage();
-        if ($notification->save()) {
-            self::sendBillApprovalEmail($notification->to_id, $notification->subject);
+
+        if ($status == 'approved') {
+            $notification->subject = 'Bill Approved';
+            $notification->message = self::getApprovedMessage();
+            if ($notification->save()) {
+                self::sendBillEmailNotification($notification->to_id, $notification->subject, $notification->message);
+            }
+        } elseif ($status == 'rejected') {
+            $notification->subject = 'Bill Rejected';
+            $notification->message = self::getRejectedMessage();
+            if ($notification->save()) {
+                self::sendBillEmailNotification($notification->to_id, $notification->subject, $notification->message);
+            }
         }
 
     }
 
-    public static function getMessage()
+    public static function getApprovedMessage()
     {
-        $message = "Your bill was successfully approved <br/>";
-        $message .= "Please use this download it.";
+        $message = "Your bill was approved <br/>";
+        $message .= "Please download it.";
         return $message;
     }
 
-    public static function sendBillApprovalEmail($to_id, $subject)
+    public static function getRejectedMessage()
+    {
+        $message = "Your bill was rejected <br/>";
+        $message .= "Please upload the image again.";
+        return $message;
+    }
+
+    public static function sendBillEmailNotification($to_id, $subject, $body)
     {
         $current_user = User::findOne($to_id);
         if (!empty($current_user)) {
-            EmailHelper::sendEmail($current_user->email, $subject, self::getMessage());
+            EmailHelper::sendEmail($current_user->email, $subject, $body);
         }
     }
 }

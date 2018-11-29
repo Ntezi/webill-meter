@@ -38,10 +38,29 @@ class BillController extends AdminController
                 if ($bill->save()) {
                     $meter->reading = $bill->current_reading;
                     if ($meter->save()) {
-                        Notification::sendBillApprovalNotification($bill->user_id, Yii::$app->user->identity->getId(), $bill->id);
+                        Notification::sendBillNotification($bill->user_id, Yii::$app->user->identity->getId(), $bill->id, 'approved');
                         Yii::$app->session->setFlash("success", Yii::t('app', 'Bill approved'));
                     }
 
+                }
+            }
+
+            return $this->redirect(['site/index']);
+
+        }
+    }
+
+    public function actionReject($id)
+    {
+        $bill = $this->findModel($id);
+
+        if (!empty($bill)) {
+            $meter = User::getConsumerCurrentMeter($bill->user_id);
+            if (!empty($meter)) {
+                $bill->paid_flag = Yii::$app->params['rejected_bill_flag'];
+                if ($bill->save()) {
+                    Notification::sendBillNotification($bill->user_id, Yii::$app->user->identity->getId(), $bill->id,'rejected');
+                    Yii::$app->session->setFlash("success", Yii::t('app', 'Bill rejected'));
                 }
             }
 

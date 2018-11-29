@@ -57,7 +57,9 @@ class BillInfoController extends AdminController
             $model->unit_price = 200;
             $model->discount = 80;
             $model->tax = 0.08;
-            $model->processing_fee = 50;
+            $model->submission_start = date('Y-m-d', strtotime('+1 month'));
+            $model->submission_end = date('Y-m-d', strtotime('+1 month'));
+            $model->status = 1;
             $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }

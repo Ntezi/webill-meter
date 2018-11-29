@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //'updated_at',
             'deadline',
             [
-                'label' => 'Payment Status',
+                'label' => 'Status',
                 'format' => 'raw',
                 'value' => function ($model) {
                     return $model->getFlagLabel();
@@ -55,12 +55,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{update} {delete} {submit}',
                 'buttons' => [
                     'update' => function ($url, $model) {
-                        if ($model->verified_by_user == Yii::$app->params['verified_no'])
+                        if ($model->verified_by_user == Yii::$app->params['verified_no'] || $model->paid_flag == Yii::$app->params['rejected_bill_flag'])
                             return Html::a(Html::tag('i', Yii::t('app', ' Update'), ['class' => 'fa fa-edit']), $url,
                                 ['class' => 'btn btn-primary btn-xs']);
                     },
                     'delete' => function ($url, $model) {
-                        if ($model->verified_by_user == Yii::$app->params['verified_no'])
+                        if ($model->verified_by_user == Yii::$app->params['verified_no'] || $model->paid_flag == Yii::$app->params['rejected_bill_flag'])
                             return Html::a(Html::tag('i', Yii::t('app', ' Delete'), ['class' => 'fa fa-trash']), $url, [
                                 'class' => 'btn btn-danger btn-xs',
                                 'data' => [
@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]);
                     },
                     'submit' => function ($url, $model) {
-                        if ($model->verified_by_user == Yii::$app->params['verified_no'])
+                        if ($model->verified_by_user == Yii::$app->params['verified_no'] || $model->paid_flag == Yii::$app->params['rejected_bill_flag'])
                             return Html::a(Html::tag('i', Yii::t('app', ' Submit'), ['class' => 'fa fa-thumbs-up']), $url, [
                                 'class' => 'btn btn-success btn-xs',
                                 'data' => [
