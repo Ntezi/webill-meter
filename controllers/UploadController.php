@@ -25,7 +25,7 @@ class UploadController extends ClientController
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Bill::find()
-                ->where(['user_id' => Yii::$app->user->identity->getId(), 'verified_by_user' => Yii::$app->params['verified_yes'], 'paid_flag' => null])
+                ->where(['user_id' => Yii::$app->user->identity->getId(), 'verified_by_user' => Yii::$app->params['verified_no'], 'paid_flag' => null])
                 ->orWhere(['paid_flag' => Yii::$app->params['rejected_bill_flag']]),
         ]);
 
