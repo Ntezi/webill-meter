@@ -33,14 +33,10 @@ class ClientController extends Controller
                             'index', 'create', 'update', 'view', 'delete', 'submit',
                         ],
                         'allow' => true,
-
+                        'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
                             return Yii::$app->user->identity->role === Yii::$app->params['consumer_role'];
-                        }
-
-                        /*'roles' => [
-                            Yii::$app->params['consumer_role']
-                        ],*/
+                        },
                     ],
                 ]
             ],

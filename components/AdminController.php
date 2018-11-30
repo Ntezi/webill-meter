@@ -26,21 +26,18 @@ class AdminController extends Controller
                     'class' => AccessRule::className(),
                 ],*/
                 'only' => [
-                    'index', 'create', 'update', 'view', 'delete', 'remove', 'activate', 'approve',
+                    'index', 'create', 'update', 'view', 'delete', 'remove', 'activate', 'approve', 'reject',
                 ],
                 'rules' => [
                     [
                         'actions' => [
-                            'index', 'create', 'update', 'view', 'delete', 'remove', 'activate', 'approve',
+                            'index', 'create', 'update', 'view', 'delete', 'remove', 'activate', 'approve', 'reject',
                         ],
                         'allow' => true,
+                        'roles' => ['@'],
                         'matchCallback' => function ($rule, $action) {
-                            return Yii::$app->user->identity->role === Yii::$app->params['admin_role'];
+                            return Yii::$app->user->identity->role === 0;
                         },
-
-                        /*'roles' => [
-                            Yii::$app->params['admin_role']
-                        ],*/
                     ],
                 ]
             ],
@@ -53,6 +50,7 @@ class AdminController extends Controller
                     'submit' => ['POST'],
                     'activate' => ['POST'],
                     'approve' => ['POST'],
+                    'reject' => ['POST'],
                 ],
             ],
         ];
